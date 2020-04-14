@@ -1,0 +1,45 @@
+version: '2.4'
+
+volumes:
+  jenkins-data:
+    external: true
+  jenkins-docker-certs:
+    driver: local
+
+services:
+  docker:
+    build:
+      context: .
+      dockerfile: Dockerfile.dind
+    privileged: true
+    healthcheck:
+      test: docker ps -q
+      interval: 3s
+      retries: 10
+    environment:
+      DOCKER_TLS_CERTDIR: /certs
+    volumes:
+      - jenkins-docker-certs:/certs/client
+      - jenkins-data:/var/jenkins_home
+    ports:
+      - 2376:2376
+  jenkins:
+    image: jenkinsci/blueocean
+    depends_on:
+      docker:
+        condition: service_healthy
+    environment:
+      DOCKER_HOST: tcp://docker:2376
+      DOCKER_CERT_PATH: /certs/client
+      DOCKER_TLS_VERIFY: 1
+    volumes:
+      - jenkins-docker-certs:/certs/client:ro
+      - jenkins-data:/var/jenkins_home
+    ports:
+      - 8080:8080
+      - 50000:50000
+  agent:
+    image: cloudhotspot/docker-agent
+    build:
+      context: .
+      dockerfile: Dockerfile.agent

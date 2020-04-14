@@ -1,0 +1,5 @@
+FROM docker:dind
+LABEL application=jenkins
+
+# Create docker group
+RUN addgroup -g 1000 docker
