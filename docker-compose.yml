@@ -39,7 +39,7 @@ services:
       - 8080:8080
       - 50000:50000
   agent:
-    image: cloudhotspot/docker-agent
+    image: continuousdeliverydocker/docker-agent
     build:
       context: .
       dockerfile: Dockerfile.agent
