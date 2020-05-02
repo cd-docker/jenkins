@@ -5,7 +5,7 @@ agent:
 	docker-compose push agent
 
 jenkins:
-	docker-compose build docker
+	docker-compose build --pull docker ngrok
 	docker volume create --name=jenkins-data
 	docker-compose up -d jenkins
 	docker-compose logs -f jenkins

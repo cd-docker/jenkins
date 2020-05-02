@@ -28,6 +28,8 @@ services:
     depends_on:
       docker:
         condition: service_healthy
+      ngrok:
+        condition: service_healthy
     environment:
       DOCKER_HOST: tcp://docker:2376
       DOCKER_CERT_PATH: /certs/client
@@ -37,7 +39,23 @@ services:
       - jenkins-data:/var/jenkins_home
     ports:
       - 8080:8080
-      - 50000:50000
+  ngrok:
+    build:
+      context: .
+      dockerfile: Dockerfile.ngrok
+    healthcheck:
+      test: curl -fs localhost:4040
+      interval: 3s
+      retries: 10
+    command:
+      - ngrok
+      - http
+      - jenkins:8080
+      - --hostname=cd-docker-jenkins.ngrok.io
+      - --log=stdout
+      - --authtoken=${NGROK_AUTH_TOKEN}
+      - --inspect=false
+      - --bind-tls=true
   agent:
     image: continuousdeliverydocker/docker-agent
     build:

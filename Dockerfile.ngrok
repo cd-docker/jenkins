@@ -1,0 +1,5 @@
+FROM alpine
+LABEL application=jenkins
+
+RUN apk add --no-cache curl coreutils
+RUN curl -fs -L https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.tgz | tar zxv -C /usr/local/bin
