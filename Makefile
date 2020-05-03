@@ -12,7 +12,7 @@ jenkins:
 
 clean:
 	docker-compose down -v
-	docker system prune --filter label=application=jenkins -f
+	docker images -q -f dangling=true -f label=application=jenkins | xargs -I ARGS docker rmi -f --no-prune ARGS
 
 # Recommended settings
 .ONESHELL:
